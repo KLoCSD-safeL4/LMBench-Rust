@@ -1,0 +1,38 @@
+diff --git a/config/minimal.toml b/config/minimal.toml
+index 45078e2..d6cae8f 100644
+--- a/config/minimal.toml
++++ b/config/minimal.toml
+@@ -14,6 +14,7 @@ extrautils = {}
+ ion = {}
+ smith = {}
+ userutils = {}
++lmbench = {}
+ 
+ [[files]]
+ path = "/usr/lib/init.d/30_console"
+diff --git a/mk/podman.mk b/mk/podman.mk
+index cd9e214..2152429 100644
+--- a/mk/podman.mk
++++ b/mk/podman.mk
+@@ -10,7 +10,7 @@ PODMAN_HOME?=$(ROOT)/build/podman
+ ## Podman command with its many arguments
+ PODMAN_VOLUMES?=--volume $(ROOT):$(CONTAINER_WORKDIR):Z --volume $(PODMAN_HOME):/home:Z
+ PODMAN_ENV?=--env PATH=/home/poduser/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --env PODMAN_BUILD=0
+-PODMAN_CONFIG?=--env ARCH=$(ARCH) --env CONFIG_NAME=$(CONFIG_NAME) --env FILESYSTEM_CONFIG=$(FILESYSTEM_CONFIG)
++PODMAN_CONFIG?=--env ARCH=$(ARCH) --env CONFIG_NAME=$(CONFIG_NAME) --env FILESYSTEM_CONFIG=$(FILESYSTEM_CONFIG) --network=host
+ PODMAN_OPTIONS?=--rm --workdir $(CONTAINER_WORKDIR) --userns keep-id --user `id -u` --interactive --tty --env TERM=$(TERM)
+ PODMAN_RUN?=podman run $(PODMAN_OPTIONS) $(PODMAN_VOLUMES) $(PODMAN_ENV) $(PODMAN_CONFIG) $(IMAGE_TAG)
+ 
+diff --git a/mk/qemu.mk b/mk/qemu.mk
+index 191b27f..bf9b89f 100644
+--- a/mk/qemu.mk
++++ b/mk/qemu.mk
+@@ -266,4 +266,6 @@ qemu_nvme_extra: qemu-deps
+ qemu_raspi: qemu-deps
+ 	$(QEMU) -M raspi3b -smp 4,cores=1 \
+ 		-kernel $(FIRMWARE) \
+-		-serial stdio -display none
++		-serial stdio -display none \
++		-sd $(DISK)
++		
+\ No newline at end of file

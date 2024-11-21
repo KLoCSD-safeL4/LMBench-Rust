@@ -1,0 +1,12 @@
+diff --git a/src/os/uefi/memory_map.rs b/src/os/uefi/memory_map.rs
+index 1147447..68bd551 100644
+--- a/src/os/uefi/memory_map.rs
++++ b/src/os/uefi/memory_map.rs
+@@ -131,6 +131,7 @@ pub unsafe fn memory_map() -> MemoryMapIter {
+ 
+     // Using next to avoid consuming iterator
+     while let Some(entry) = iter.next() {
++        println!("{:?}", entry);
+         area_add(entry);
+     }
+ 

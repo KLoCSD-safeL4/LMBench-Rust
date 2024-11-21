@@ -1,0 +1,35 @@
+diff --git a/src/arch/aarch64/device/cpu/registers/control_regs.rs b/src/arch/aarch64/device/cpu/registers/control_regs.rs
+index 461df7b..0a4195a 100644
+--- a/src/arch/aarch64/device/cpu/registers/control_regs.rs
++++ b/src/arch/aarch64/device/cpu/registers/control_regs.rs
+@@ -109,3 +109,9 @@ pub unsafe fn midr() -> u32 {
+     asm!("mrs {}, midr_el1", out(reg) ret);
+     ret as u32
+ }
++
++pub unsafe fn cntpct_el0() -> u64 {
++    let ret: u64;
++    asm!("mrs {}, cntpct_el0", out(reg) ret);
++    ret
++}
+diff --git a/src/arch/aarch64/time.rs b/src/arch/aarch64/time.rs
+index 8bf457d..398a7bd 100644
+--- a/src/arch/aarch64/time.rs
++++ b/src/arch/aarch64/time.rs
+@@ -1,4 +1,13 @@
++use super::device::cpu::registers::control_regs;
++
+ pub fn monotonic_absolute() -> u128 {
+     //TODO: aarch64 generic timer counter
+-    *crate::time::OFFSET.lock()
+-}
++    // *crate::time::OFFSET.lock()
++    let cntpct=unsafe{
++        control_regs::cntpct_el0() as u128
++    };
++    let cntfrq=unsafe{
++        control_regs::cntfreq_el0() as u128
++    };
++    (cntpct * 1_000_000_000) / cntfrq
++}
+\ No newline at end of file

@@ -10,29 +10,100 @@ index 45078e2..d6cae8f 100644
  
  [[files]]
  path = "/usr/lib/init.d/30_console"
-diff --git a/mk/podman.mk b/mk/podman.mk
-index cd9e214..2152429 100644
---- a/mk/podman.mk
-+++ b/mk/podman.mk
-@@ -10,7 +10,7 @@ PODMAN_HOME?=$(ROOT)/build/podman
- ## Podman command with its many arguments
- PODMAN_VOLUMES?=--volume $(ROOT):$(CONTAINER_WORKDIR):Z --volume $(PODMAN_HOME):/home:Z
- PODMAN_ENV?=--env PATH=/home/poduser/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin --env PODMAN_BUILD=0
--PODMAN_CONFIG?=--env ARCH=$(ARCH) --env CONFIG_NAME=$(CONFIG_NAME) --env FILESYSTEM_CONFIG=$(FILESYSTEM_CONFIG)
-+PODMAN_CONFIG?=--env ARCH=$(ARCH) --env CONFIG_NAME=$(CONFIG_NAME) --env FILESYSTEM_CONFIG=$(FILESYSTEM_CONFIG) --network=host
- PODMAN_OPTIONS?=--rm --workdir $(CONTAINER_WORKDIR) --userns keep-id --user `id -u` --interactive --tty --env TERM=$(TERM)
- PODMAN_RUN?=podman run $(PODMAN_OPTIONS) $(PODMAN_VOLUMES) $(PODMAN_ENV) $(PODMAN_CONFIG) $(IMAGE_TAG)
- 
 diff --git a/mk/qemu.mk b/mk/qemu.mk
-index 191b27f..bf9b89f 100644
+index 191b27f..d6f6774 100644
 --- a/mk/qemu.mk
 +++ b/mk/qemu.mk
-@@ -266,4 +266,6 @@ qemu_nvme_extra: qemu-deps
+@@ -266,4 +266,5 @@ qemu_nvme_extra: qemu-deps
  qemu_raspi: qemu-deps
  	$(QEMU) -M raspi3b -smp 4,cores=1 \
  		-kernel $(FIRMWARE) \
 -		-serial stdio -display none
 +		-serial stdio -display none \
 +		-sd $(DISK)
-+		
-\ No newline at end of file
+diff --git a/qemu.sh b/qemu.sh
+new file mode 100644
+index 0000000..47d55b4
+--- /dev/null
++++ b/qemu.sh
+@@ -0,0 +1,26 @@
++DISK=build/aarch64/minimal/harddrive.img 
++
++MOUNT_DIR=/mnt/efi_boot 
++
++DTB_DIR=$MOUNT_DIR/dtb/broadcom 
++
++WORKPLACE=/home/zhangxb/safeos/kernel/tryredox
++
++DTS=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
++
++dtc -I dts -O dtb $DTS > ./bcm2837-rpi-3-b.dtb
++
++sudo mkdir -p $MOUNT_DIR
++
++sudo mount -o loop,offset=$((2048*512)) $DISK $MOUNT_DIR
++
++mkdir -p $DTB_DIR
++
++sudo cp  bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b.dtb
++
++sudo cp $DTB_DIR/bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b-plus.dtb
++
++sync
++
++sudo umount $MOUNT_DIR
++
+diff --git a/rasp.sh b/rasp.sh
+new file mode 100644
+index 0000000..08c75b3
+--- /dev/null
++++ b/rasp.sh
+@@ -0,0 +1,48 @@
++DISK=build/aarch64/minimal/harddrive.img
++MOUNT_DIR=/mnt/efi_boot
++DTB_DIR=$MOUNT_DIR/dtb/broadcom
++WORKPLACE=/home/zhangxb/try-redox
++DTS=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
++UBOOT=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/u-boot-rpi-3-b-plus.bin
++CONFIG_TXT=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/config.txt
++FW_DIR=$WORKPLACE/firmware/boot
++SDPATH=/dev/sda
++
++dtc -I dts -O dtb $DTS > ./bcm2837-rpi-3-b.dtb
++
++sudo mkdir -p $MOUNT_DIR
++
++sudo mount -o loop,offset=$((2048*512)) $DISK $MOUNT_DIR
++
++cp -rf $FW_DIR/* $MOUNT_DIR
++
++mkdir -p $DTB_DIR
++
++sudo cp  bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b.dtb
++
++sudo cp $DTB_DIR/bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b-plus.dtb
++
++cp $UBOOT $MOUNT_DIR/u-boot.bin
++
++cp $CONFIG_TXT $MOUNT_DIR
++
++sync
++
++sudo umount $MOUNT_DIR
++
++dd if=build/aarch64/minimal/harddrive.img of=$SDPATH
++
++sudo gdisk $SDPATH <<EOF
++r
++p
++h
++2
++n
++0c
++n
++n
++o
++w
++y
++y
++EOF

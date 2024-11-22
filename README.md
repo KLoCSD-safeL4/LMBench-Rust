@@ -11,17 +11,36 @@
 
 - Follow the official  Redox book, construct a Redox build system:
   - https://doc.redox-os.org/book/building-redox.html#preparing-the-build
-  - after the `time make all` commond, the build system is constructed and we can move on to the next step
+  - Do not `make all` now, we have to change the build target and source code of some recipes.
 - Follow the official tutorial: https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b . 
   - Clone the `redox_firmware` repo
   - Clone the `raspberrypi/firmware` repo
 - Now your `tryredox` directory should look like this 
   - `firmware  native_bootstrap.sh  patches  redox  redox_firmware  scripts`
+- change the `.config` file,add following lines
+  ```
+  ARCH?=aarch64
+  CONFIG_NAME?=minimal
+  CONFIG?=minimal
+  BOARD?=raspi3bp
+  ```
+
 
 
 ## Changes needed to be done 
 
 - Nearly all changes lie under `patches/`. You can simple apply thouse patches to the corresponding git repo.
+- follow the commands listed below to apply all patches
+  - under the `patches` directory
+  - `git apply --directory tryredox/redox_firmware/ dts.patch`
+  - `git apply --directory tryredox/redox/ config.patch`
+  - `git apply --directory tryredox/redox/cookbook/ cookbook.patch`
+  - `git apply --directory tryredox/redox/cookbook/recipes/core/kernel/source/ kernel.patch`
+  - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source bootloader.patch`
+  - `git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`
+    - __do not apply this patch if you want to test on qemu.__
+- run the `time make all` commond, this can take a while.
+  - once this command finishes, the kernel img is constructed and we can move on to the `Run on qemu or a Raspiberry pi` section.
 - The changes are listed as follows.
 
 ### dts
@@ -52,23 +71,19 @@
   		-sd $(DISK)
   ```
 
-- add configurations in `.config`
 
-  ```
-  PODMAN_BUILD?=0
-  ARCH?=aarch64
-  CONFIG_NAME?=minimal
-  CONFIG?=minimal
-  BOARD?=raspi3bp
-  ```
+### bootloader
+- patch: `driver.patch`
+- Path:`tryredox/redox/cookbook/recipes/core/bootloader`
+- This one is weird . We need to add a println before `area_add(entry);` ,or Redox won't be able to find any free memory
 
 ### Kernel
-
+- patch: `kernel.patch`
 - Path:`tryredox/redox/cookbook/recipes/core/kernel/source`
 - Redox's `sys_clockgettime` for aarch64 is an empty implementation which only returns 0. We need to get this done.
 
 ### bcm2835 driver
-
+- patch:`cookbook.patch`
 - path:`tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid`
 
 - The emmc driver is missing in the `driver-initfs`. Add it in the `drivers-initfs/recipe.toml->line64`
@@ -83,21 +98,16 @@
   - __If you intend to test on qemu, do not modify source code of bcm2835-sdhcid__
 
 
-### bootloader
 
-- Path:`tryredox/redox/cookbook/recipes/core/bootloader`
-- This one is weird . We need to add a println before `area_add(entry);` ,or Redox won't be able to find any free memory
-
-## Lmbench recipe
-
+### Lmbench recipe
+- patch:`cookbook.patch`
 - In order to run a Rust program in Redox,we need to add it under the recipe folder
-- run command `cp -r lmbench tryredox/redox/cookbook/recipes`
-- Then, run `make rebuild` to rebuild the kernel with changes made and a new recipe added.
+- The patch file includes all source code of lmbench. You can also find the code under `kernel/lmbench`
 
 ## Run on qemu or a Raspiberry pi
 
 - You can either follow the tutorial https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b  or use the scripts under `scripts/`
-- Copy the scripts to `tryredox/redox/` and change the `WORKPLACE` environment variable
+- The scripts under `scripts/` are included in `config.patch`. You should see them under `tryredox/redox`
 - Alwasys log in as `root`
 
 ### qemu

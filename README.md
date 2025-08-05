@@ -33,11 +33,11 @@
 - follow the commands listed below to apply all patches
   - patches are under the `LMBench-Rust/patches` directory
   - change the path after `--directory` to your `tryredox/`.
-  - `git apply --directory tryredox/redox_firmware/ patches/dts.patch -v`
-  - `git apply --directory tryredox/redox/ patches/config.patch -v`
-  - `git apply --directory tryredox/redox/cookbook/ patches/cookbook.patch -v`
+  - `git apply --directory tryredox/ patches/dts.patch -v`
+  - `git apply --directory tryredox/ patches/config.patch -v`
+  - `git apply --directory tryredox/ patches/cookbook.patch -v`
   - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/kernel/source/ kernel.patch`~~
-  - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source patches/bootloader.patch`
+  - `git apply --directory tryredox/ patches/bootloader.patch -v`
   - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`~~
     - __do not apply this patch if you want to test on qemu.__
 - run the `time make all` command, this can take a while.

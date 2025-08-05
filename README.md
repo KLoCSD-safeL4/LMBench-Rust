@@ -2,7 +2,7 @@
 
 - This branch is a tutorial for running lmbench(rust reimplemented ) under Redox OS with Raspberry Pi 3b+
 - Why not Lmbench c code?
-  - Redox does not suport `pselect6` which is crucial to run lmbench
+  - Redox does not support `pselect6` which is crucial to run lmbench
 - Why do i need this tutorial
   - The official tutorial of running Redox on  Raspberry Pi 3b+ is somehow broken, many things needed to be changed in order to boot Redox. This tutorial saves you the effort  of figuring out how to boot Redox on a Raspberry Pi up to ion(user shell).
 
@@ -39,7 +39,7 @@
   - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source bootloader.patch`
   - `git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`
     - __do not apply this patch if you want to test on qemu.__
-- run the `time make all` commond, this can take a while.
+- run the `time make all` command, this can take a while.
   - once this command finishes, the kernel img is constructed and we can move on to the `Run on qemu or a Raspiberry pi` section.
 - The changes are listed as follows.
 
@@ -93,7 +93,7 @@
   + pcid | fbcond | inputd | vesad | lived | ps2d | acpid | bcm2835-sdhcid)
   ```
 
-- Redox's driver for bcm2835 emmc doesn't work for me. SInce Uboot has already initialized emmc once, we don't need to do that again.
+- Redox's driver for bcm2835 emmc doesn't work for me. Since Uboot has already initialized emmc once, we don't need to do that again.
 
   - __If you intend to test on qemu, do not modify source code of bcm2835-sdhcid__
 
@@ -104,18 +104,18 @@
 - In order to run a Rust program in Redox,we need to add it under the recipe folder
 - The patch file includes all source code of lmbench. You can also find the code under `kernel/lmbench`
 
-## Run on qemu or a Raspiberry pi
+## Run on qemu or a Raspberry pi
 
 - You can either follow the tutorial https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b  or use the scripts under `scripts/`
 - The scripts under `scripts/` are included in `config.patch`. You should see them under `tryredox/redox`
-- Alwasys log in as `root`
+- Always log in as `root`
 
 ### qemu
 
 - run `sudo bash qemu.sh`
 - run `make qemu_raspi live=no` 
 
-### Raspiberry pi 3b+
+### Raspberry pi 3b+
 
 - I use a `SanDisk Ultra microSDHC 32GB` sdcard
 - change `SDPATH` to your ow path(/dev/sdx)

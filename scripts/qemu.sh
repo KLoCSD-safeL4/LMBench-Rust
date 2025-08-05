@@ -1,10 +1,10 @@
-DISK=build/aarch64/minimal/harddrive.img 
+DISK=build/aarch64/minimal/harddrive.img
 
-MOUNT_DIR=/mnt/efi_boot 
+MOUNT_DIR=/mnt/efi_boot
 
-DTB_DIR=$MOUNT_DIR/dtb/broadcom 
+DTB_DIR=$MOUNT_DIR/dtb/broadcom
 
-WORKPLACE=/home/zhangxb/try-redox 
+WORKPLACE=/home/ubuntu/LMBench-Rust/tryredox
 
 DTS=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
 

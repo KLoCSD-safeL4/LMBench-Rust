@@ -9,14 +9,14 @@
 
 ## Prerequisite
 
-- Follow the official  Redox book, construct a Redox build system:
+- Follow the official Redox book, construct a Redox build system:
   - https://doc.redox-os.org/book/building-redox.html#preparing-the-build
   - Do not run `make all` now, we have to change the build target and source code of some recipes.
 - Follow the official tutorial: https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b .
   - Clone the `redox_firmware` repo
   - Clone the `raspberrypi/firmware` repo
 - Now your `tryredox` directory should look like this
-  - `firmware  native_bootstrap.sh  patches  redox  redox_firmware  scripts`
+  - ` firmware  redox  redox_firmware `
 - change the `redox/.config` file,add following lines
   ```
   ARCH?=aarch64
@@ -33,11 +33,11 @@
 - follow the commands listed below to apply all patches
   - patches are under the `LMBench-Rust/patches` directory
   - change the path after `--directory` to your `tryredox/`.
-  - `git apply --directory tryredox/ patches/dts.patch -v`
-  - `git apply --directory tryredox/ patches/config.patch -v`
-  - `git apply --directory tryredox/ patches/cookbook.patch -v`
+  - `git apply --directory tryredox/redox_firmware/ patches/dts.patch -v`
+  - `git apply --directory tryredox/redox/ patches/config.patch -v`
+  - `git apply --directory tryredox/redox/cookbook/ patches/cookbook.patch -v`
   - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/kernel/source/ kernel.patch`~~
-  - `git apply --directory tryredox/ patches/bootloader.patch -v`
+  - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source patches/bootloader.patch`
   - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`~~
     - __do not apply this patch if you want to test on qemu.__
 - run the `time make all` command, this can take a while.
@@ -52,7 +52,34 @@
 1. **UART Node**:
   - Modified the `interrupts` property by adding a new interrupt value `<0x25>`.
 
+  - **IMPORTANT**: Due to unknown reason, I was unable to add the interrupt value `<0x25>` with the `git apply` so you'll have to do it by yourself. You need to get inside `tryredox/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-r-b-plus.dts`, the code begins at line 13:
+
+    ```
+        uart0: serial@3f201000 {
+            compatible = "arm,pl011\0arm,primecell";
+            reg = <0x3f201000 0x200>;
+            interrupt-parent = <&intc>;
+            interrupts = <0x2 0x19>;
+            skip-init;
+            cts-event-walkaround;
+        };
+    ```
+
+    Then add `<0x25>` to `interrupts = <0x2, 0x19>`, after which the code should look like:
+
+    ```
+        uart0: serial@3f201000 {
+            compatible = "arm,pl011\0arm,primecell";
+            reg = <0x3f201000 0x200>;
+            interrupt-parent = <&intc>;
+            interrupts = <0x2 0x19 0x25>;
+            skip-init;
+            cts-event-walkaround;
+        };
+    ```
+
 2. **Interrupt Controller**:
+
   - Modified the `interrupts` property by adding an additional interrupt value `<0x0>`.
 
 3. **SoC Node**:
@@ -64,10 +91,10 @@
 
 - mount sdcard in `qemu.mk`
 
-  ```
+  ```makefile
   qemu_raspi: qemu-deps
   	$(QEMU) -M raspi3b -smp 4,cores=1 \
-  		-kernel $(FIRMWARE) \
+  		-kernel $(QEMU_KERNEL) \
   		-serial stdio -display none \
   		-sd $(DISK)
   ```

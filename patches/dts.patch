@@ -6,15 +6,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts b/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
 --- a/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
 +++ b/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts	(date 1754372346679)
-@@ -14,7 +14,7 @@
-         compatible = "arm,pl011\0arm,primecell";
-         reg = <0x3f201000 0x200>;
-         interrupt-parent = <&intc>;
--        interrupts = <0x2 0x19>;
-+        interrupts = <0x2 0x19 0x25>;
-         skip-init;
-         cts-event-walkaround;
-     };
 @@ -53,10 +53,12 @@
          interrupt-controller;
          #interrupt-cells = <2>;

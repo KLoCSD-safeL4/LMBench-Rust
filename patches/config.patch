@@ -1,27 +1,11 @@
-Index: config/minimal.toml
+Index: redox/mk/qemu.mk
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/config/minimal.toml b/config/minimal.toml
---- a/config/minimal.toml	(revision b82bffcab9d7b9603cdaa213b98ea2e0a3a172f9)
-+++ b/config/minimal.toml	(revision 27070d834fa4d80ff49a03e5878372ae28681f14)
-@@ -13,6 +13,7 @@
- extrautils = {}
- ion = {}
- smith = {}
-+lmbench = {}
-
- [[files]]
- path = "/usr/lib/init.d/30_console"
-Index: mk/qemu.mk
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
-diff --git a/mk/qemu.mk b/mk/qemu.mk
---- a/mk/qemu.mk	(revision b82bffcab9d7b9603cdaa213b98ea2e0a3a172f9)
-+++ b/mk/qemu.mk	(revision 27070d834fa4d80ff49a03e5878372ae28681f14)
+diff --git a/redox/mk/qemu.mk b/redox/mk/qemu.mk
+--- a/redox/mk/qemu.mk
++++ b/redox/mk/qemu.mk	(date 1754371979256)
 @@ -112,7 +112,7 @@
  		QEMUFLAGS+=-device qemu-xhci -device usb-kbd -device usb-tablet
  	endif
@@ -31,11 +15,52 @@ diff --git a/mk/qemu.mk b/mk/qemu.mk
  endif
 
  QEMUFLAGS+=-smp $(QEMU_SMP) -m $(QEMU_MEM)
-@@ -300,5 +300,7 @@
- #additional steps for $(DISK) are required!!!
+@@ -301,4 +301,5 @@
  qemu_raspi: qemu-deps
  	$(QEMU) -M raspi3b -smp 4,cores=1 \
--		-kernel $(FIRMWARE) \
-+		-kernel $(QEMU_KERNEL) \
-+		-sd $(DISK) \
- 		-serial stdio -display none
+ 		-kernel $(FIRMWARE) \
+-		-serial stdio -display none
++		-serial stdio -display none \
++		-sd $(DISK)
+diff --git a/redox/config/minimal.toml b/redox/config/minimal.toml
+--- a/redox/config/minimal.toml
++++ b/redox/config/minimal.toml	(date 1754372111172)
+@@ -13,6 +13,7 @@
+ extrautils = {}
+ ion = {}
+ smith = {}
++lmbench = {}
+
+ [[files]]
+ path = "/usr/lib/init.d/30_console"
+diff --git a/redox/qemu.sh b/redox/qemu.sh
+new file mode 100644
+--- /dev/null	(date 1754374286609)
++++ b/redox/qemu.sh	(date 1754374286609)
+@@ -0,0 +1,25 @@
++DISK=build/aarch64/minimal/harddrive.img
++
++MOUNT_DIR=/mnt/efi_boot
++
++DTB_DIR=$MOUNT_DIR/dtb/broadcom
++
++WORKPLACE=/home/ubuntu/LMBench-Rust/tryredox
++
++DTS=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
++
++dtc -I dts -O dtb $DTS > ./bcm2837-rpi-3-b.dtb
++
++sudo mkdir -p $MOUNT_DIR
++
++sudo mount -o loop,offset=$((2048*512)) $DISK $MOUNT_DIR
++
++mkdir -p $DTB_DIR
++
++sudo cp bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b.dtb
++
++sudo cp $DTB_DIR/bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b-plus.dtb
++
++sync
++
++sudo umount $MOUNT_DIR
+\ No newline at end of file

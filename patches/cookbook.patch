@@ -1,12 +1,12 @@
-Index: recipes/lmbench/source/src/fs.rs
+Index: redox/cookbook/recipes/lmbench/source/src/fs.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/fs.rs b/recipes/lmbench/source/src/fs.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/fs.rs b/redox/cookbook/recipes/lmbench/source/src/fs.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/fs.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/fs.rs	(date 1754307872938)
 @@ -0,0 +1,372 @@
 +const FS_ITER: usize = ITERATIONS * 10;
 +const WRITE_BUF_SIZE: usize = 1024 * 1024;
@@ -380,15 +380,15 @@ new file mode 100644
 +    );
 +    Ok(())
 +}
-Index: recipes/lmbench/source/src/ctx.rs
+Index: redox/cookbook/recipes/lmbench/source/src/ctx.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/ctx.rs b/recipes/lmbench/source/src/ctx.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/ctx.rs b/redox/cookbook/recipes/lmbench/source/src/ctx.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/ctx.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/ctx.rs	(date 1754307872938)
 @@ -0,0 +1,107 @@
 +//test context switch overhead
 +use crate::*;
@@ -497,15 +497,15 @@ new file mode 100644
 +        sys_yield();
 +    }
 +}
-Index: recipes/lmbench/source/src/main.rs
+Index: redox/cookbook/recipes/lmbench/source/src/main.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/main.rs b/recipes/lmbench/source/src/main.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/main.rs b/redox/cookbook/recipes/lmbench/source/src/main.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/main.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/main.rs	(date 1754307872938)
 @@ -0,0 +1,364 @@
 +pub mod ctx;
 +pub mod fs;
@@ -871,15 +871,15 @@ new file mode 100644
 +    printlninfo!("Test file '{}' created with size {} bytes.", filename, size);
 +    Ok(())
 +}
-Index: recipes/lmbench/source/src/mmap.rs
+Index: redox/cookbook/recipes/lmbench/source/src/mmap.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/mmap.rs b/recipes/lmbench/source/src/mmap.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/mmap.rs b/redox/cookbook/recipes/lmbench/source/src/mmap.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/mmap.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/mmap.rs	(date 1754307872938)
 @@ -0,0 +1,318 @@
 +use crate::*;
 +use libc::{
@@ -1199,15 +1199,15 @@ new file mode 100644
 +
 +    Ok(delta_time_avg)
 +}
-Index: recipes/lmbench/source/src/null.rs
+Index: redox/cookbook/recipes/lmbench/source/src/null.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/null.rs b/recipes/lmbench/source/src/null.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/null.rs b/redox/cookbook/recipes/lmbench/source/src/null.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/null.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/null.rs	(date 1754307872938)
 @@ -0,0 +1,82 @@
 +/// Perform null syscall benchmark
 +use crate::*;
@@ -1291,15 +1291,15 @@ new file mode 100644
 +
 +    Ok(delta_time_avg)
 +}
-Index: recipes/lmbench/source/src/pipe.rs
+Index: redox/cookbook/recipes/lmbench/source/src/pipe.rs
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/src/pipe.rs b/recipes/lmbench/source/src/pipe.rs
+diff --git a/redox/cookbook/recipes/lmbench/source/src/pipe.rs b/redox/cookbook/recipes/lmbench/source/src/pipe.rs
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/src/pipe.rs	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/src/pipe.rs	(date 1754307872938)
 @@ -0,0 +1,304 @@
 +use crate::*;
 +use nix::unistd::{close, fork, pipe, ForkResult};
@@ -1605,15 +1605,15 @@ new file mode 100644
 +        }
 +    }
 +}
-Index: recipes/lmbench/source/Cargo.toml
+Index: redox/cookbook/recipes/lmbench/source/Cargo.toml
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/recipes/lmbench/source/Cargo.toml b/recipes/lmbench/source/Cargo.toml
+diff --git a/redox/cookbook/recipes/lmbench/source/Cargo.toml b/redox/cookbook/recipes/lmbench/source/Cargo.toml
 new file mode 100644
---- /dev/null	(date 1732248335000)
-+++ b/recipes/lmbench/source/Cargo.toml	(date 1732248335000)
+--- /dev/null	(date 1754307872938)
++++ b/redox/cookbook/recipes/lmbench/source/Cargo.toml	(date 1754307872938)
 @@ -0,0 +1,9 @@
 +[package]
 +name = "lmbench"
@@ -1625,3 +1625,15 @@ new file mode 100644
 +libc = "0.2"
 +nix = "0.26"
 \ No newline at end of file
+Index: redox/cookbook/recipes/lmbench/recipe.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/redox/cookbook/recipes/lmbench/recipe.toml b/redox/cookbook/recipes/lmbench/recipe.toml
+new file mode 100644
+--- /dev/null	(date 1754307872937)
++++ b/redox/cookbook/recipes/lmbench/recipe.toml	(date 1754307872937)
+@@ -0,0 +1,2 @@
++[build]
++template = "cargo"

@@ -4,40 +4,41 @@
 - Why not Lmbench c code?
   - Redox does not support `pselect6` which is crucial to run lmbench
 - Why do i need this tutorial
-  - The official tutorial of running Redox on  Raspberry Pi 3b+ is somehow broken, many things needed to be changed in order to boot Redox. This tutorial saves you the effort  of figuring out how to boot Redox on a Raspberry Pi up to ion(user shell).
+  - The official tutorial of running Redox on Raspberry Pi 3b+ is somehow broken, many things needed to be changed in order to boot Redox. This tutorial saves you the effort of figuring out how to boot Redox on a Raspberry Pi up to ion(user shell).
 
 
 ## Prerequisite
 
 - Follow the official  Redox book, construct a Redox build system:
   - https://doc.redox-os.org/book/building-redox.html#preparing-the-build
-  - Do not `make all` now, we have to change the build target and source code of some recipes.
-- Follow the official tutorial: https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b . 
+  - Do not run `make all` now, we have to change the build target and source code of some recipes.
+- Follow the official tutorial: https://doc.redox-os.org/book/raspi.html#raspberry-pi-3-model-b .
   - Clone the `redox_firmware` repo
   - Clone the `raspberrypi/firmware` repo
-- Now your `tryredox` directory should look like this 
+- Now your `tryredox` directory should look like this
   - `firmware  native_bootstrap.sh  patches  redox  redox_firmware  scripts`
-- change the `.config` file,add following lines
+- change the `redox/.config` file,add following lines
   ```
   ARCH?=aarch64
   CONFIG_NAME?=minimal
-  CONFIG?=minimal
   BOARD?=raspi3bp
   ```
 
 
 
-## Changes needed to be done 
+## Changes needed to be done
 
-- Nearly all changes lie under `patches/`. You can simple apply thouse patches to the corresponding git repo.
+- Nearly all changes lie under `patches/`. You can simply apply those patches to the corresponding git repo.
+- Unnecessary patch are marked as .bak files.
 - follow the commands listed below to apply all patches
-  - under the `patches` directory
-  - `git apply --directory tryredox/redox_firmware/ dts.patch`
-  - `git apply --directory tryredox/redox/ config.patch`
-  - `git apply --directory tryredox/redox/cookbook/ cookbook.patch`
-  - `git apply --directory tryredox/redox/cookbook/recipes/core/kernel/source/ kernel.patch`
-  - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source bootloader.patch`
-  - `git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`
+  - patches are under the `LMBench-Rust/patches` directory
+  - change the path after `--directory` to your `tryredox/`.
+  - `git apply --directory tryredox/redox_firmware/ patches/dts.patch -v`
+  - `git apply --directory tryredox/redox/ patches/config.patch -v`
+  - `git apply --directory tryredox/redox/cookbook/ patches/cookbook.patch -v`
+  - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/kernel/source/ kernel.patch`~~
+  - `git apply --directory tryredox/redox/cookbook/recipes/core/bootloader/source patches/bootloader.patch`
+  - ~~`git apply --directory tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid driver.patch`~~
     - __do not apply this patch if you want to test on qemu.__
 - run the `time make all` command, this can take a while.
   - once this command finishes, the kernel img is constructed and we can move on to the `Run on qemu or a Raspiberry pi` section.
@@ -49,19 +50,19 @@
 - Patch file:`dts.patch`
 
 1. **UART Node**:
-   - Modified the `interrupts` property by adding a new interrupt value `<0x25>`.
+  - Modified the `interrupts` property by adding a new interrupt value `<0x25>`.
 
 2. **Interrupt Controller**:
-   - Modified the `interrupts` property by adding an additional interrupt value `<0x0>`.
+  - Modified the `interrupts` property by adding an additional interrupt value `<0x0>`.
 
 3. **SoC Node**:
-   - Added new properties `#address-cells` and `#size-cells` with values `<0x01>` each to the `soc` node. 
+  - Added new properties `#address-cells` and `#size-cells` with values `<0x01>` each to the `soc` node.
 
-### build system configuration 
+### build system configuration
 
 - add recipe `lmbench` in minimal.toml
 
-- mount sdcard in `qemu.mk` 
+- mount sdcard in `qemu.mk`
 
   ```
   qemu_raspi: qemu-deps
@@ -71,18 +72,20 @@
   		-sd $(DISK)
   ```
 
-
 ### bootloader
+
 - patch: `driver.patch`
 - Path:`tryredox/redox/cookbook/recipes/core/bootloader`
 - This one is weird . We need to add a println before `area_add(entry);` ,or Redox won't be able to find any free memory
 
-### Kernel
+### ~~Kernel~~
+- **No longer needed as it's included in the updates made by Redox.**
 - patch: `kernel.patch`
 - Path:`tryredox/redox/cookbook/recipes/core/kernel/source`
 - Redox's `sys_clockgettime` for aarch64 is an empty implementation which only returns 0. We need to get this done.
 
-### bcm2835 driver
+### ~~bcm2835 driver~~
+- **No longer needed as it's included in the updates made by Redox.**
 - patch:`cookbook.patch`
 - path:`tryredox/redox/cookbook/recipes/core/drivers-initfs/source/storage/bcm2835-sdhcid`
 
@@ -113,7 +116,7 @@
 ### qemu
 
 - run `sudo bash qemu.sh`
-- run `make qemu_raspi live=no` 
+- run `make qemu_raspi live=no`
 
 ### Raspberry pi 3b+
 
@@ -127,7 +130,7 @@
 ## Usage
 
 - after login, cd to `/usr/bin`. You should find `lmbench` under this path.
-- `./lmbench` + tests you want to run. 
+- `./lmbench` + tests you want to run.
 
 ```Rust
 //Redox supported lmbench. These tests are reimplemented in rust 

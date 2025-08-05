@@ -8,15 +8,15 @@ WORKPLACE=/home/ubuntu/LMBench-Rust/tryredox
 
 DTS=$WORKPLACE/redox_firmware/platform/raspberry_pi/rpi3/bcm2837-rpi-3-b-plus.dts
 
-dtc -I dts -O dtb $DTS > ./bcm2837-rpi-3-b.dtb
+sudo dtc -I dts -O dtb $DTS > ./bcm2837-rpi-3-b.dtb
 
 sudo mkdir -p $MOUNT_DIR
 
 sudo mount -o loop,offset=$((2048*512)) $DISK $MOUNT_DIR
 
-mkdir -p $DTB_DIR
+sudo mkdir -p $DTB_DIR
 
-sudo cp  bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b.dtb
+sudo cp bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b.dtb
 
 sudo cp $DTB_DIR/bcm2837-rpi-3-b.dtb $DTB_DIR/bcm2837-rpi-3-b-plus.dtb
 

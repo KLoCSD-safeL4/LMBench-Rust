@@ -1,0 +1,16 @@
+Index: redox/cookbook/recipes/core/bootloader/source/src/os/uefi/memory_map.rs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/redox/cookbook/recipes/core/bootloader/source/src/os/uefi/memory_map.rs b/redox/cookbook/recipes/core/bootloader/source/src/os/uefi/memory_map.rs
+--- a/redox/cookbook/recipes/core/bootloader/source/src/os/uefi/memory_map.rs
++++ b/redox/cookbook/recipes/core/bootloader/source/src/os/uefi/memory_map.rs	(date 1754376363044)
+@@ -131,6 +131,7 @@
+
+     // Using next to avoid consuming iterator
+     while let Some(entry) = iter.next() {
++        println!("{:?}", entry);
+         area_add(entry);
+     }
+

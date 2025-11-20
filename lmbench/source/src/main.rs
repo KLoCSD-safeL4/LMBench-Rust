@@ -2,6 +2,7 @@ pub mod ctx;
 pub mod fs;
 pub mod mmap;
 pub mod null;
+pub mod pagefault;
 pub mod pipe;
 
 use std::error::Error;
@@ -47,6 +48,10 @@ fn main() {
                 let _ = fs::do_fs_create_del();
                 let _ = fs::do_fs_delete();
             }
+            "lat_fs_del" => {
+                // let _ = fs::do_fs_create_del();
+                let _ = fs::do_fs_delete();
+            }
             "lat_pipe" => {
                 pipe::do_pipe();
             }
@@ -74,12 +79,12 @@ fn main() {
                         if let Some(mode) = args.next() {
                             match mode.as_str() {
                                 "mmap_only" => {
-                                    create_testfile("testfile", size)
+                                    create_testfile("/testfile", size)
                                         .expect("Failed to create test file");
                                     let _ = mmap::do_mmap_only(size);
                                 }
                                 "open2close" => {
-                                    create_testfile("testfile", size)
+                                    create_testfile("/testfile", size)
                                         .expect("Failed to create test file");
                                     let _ = mmap::do_open2close(size);
                                 }
@@ -126,6 +131,9 @@ fn main() {
                     println!("No size parameter for bw_pipe (expected: size in KB)");
                     std::process::exit(1);
                 }
+            }
+            "page_fault" => {
+                let _ = pagefault::do_pagefault("test", 1024 * 1024);
             }
             _ => {
                 println!("Unknown command: {}", arg);
